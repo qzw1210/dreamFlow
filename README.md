@@ -20,7 +20,7 @@
 
 #### 使用说明
 
-启动和登陆请参考springboot:run
+启动:springboot:run
 用户名/密码: system/admin
  
 
