@@ -1,0 +1,74 @@
+<% layout('/layouts/default.html', {title: '填写解决方案', libs:['fileupload','validate']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+	    <div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-trophy"></i> ${text('填写解决方案')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool"
+					data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+	<%
+		 var question= @com.jeesite.modules.suggestion.util.Get.getQuestion(taskId);
+	%>
+	    <% include('/modules/suggestion/questionInfo.html',{question:question}){}  %>	
+	    <#form:form id="inputForm" model="${question}" action="${ctx}/suggestion/question/save" method="post" class="form-horizontal">
+			<#form:hidden path="questionCode"/>
+			<#form:hidden name="taskId" value="${taskId}"/>
+			<div class="box-body">
+				<div class="form-unit">${text('解决问题信息')}</div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required ">*</span> 计划完成时间：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-2">
+								<#form:input path="finishTime" readonly="false" maxlength="20" class="form-control Wdate required"
+									dataFormat="date" onclick="WdatePicker({dateFmt:'yyyy-MM-dd',isShowClear:false});"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-xs-12">
+						<div class="form-group">
+							<label class="control-label col-sm-2" title="">
+								<span class="required">*</span> ${text('解决方案')}：<i class="fa icon-question hide"></i></label>
+							<div class="col-sm-10">
+								<#form:textarea path="plan" rows="4" maxlength="255" class="form-control required"/>
+							</div>
+						</div>
+					</div>
+				</div>
+				
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" onclick="$('#inputForm').attr('action','${ctx}/suggestion/question/execute')" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('提交')}</button>&nbsp;
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>	
+	$("#inputForm").validate({
+		submitHandler : function(form) {
+			js.ajaxSubmitForm($(form), function(data) {
+				js.showMessage(data.message);
+				if (data.result == Global.TRUE) {
+					js.closeCurrentTabPage(function(contentWindow) {
+						contentWindow.page();
+					});
+				}
+			}, "json");
+		}
+	});
+</script>

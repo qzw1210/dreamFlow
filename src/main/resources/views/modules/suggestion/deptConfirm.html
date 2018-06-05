@@ -1,0 +1,52 @@
+<% layout('/layouts/default.html', {title: '提出问题负责人确认完成', libs:['fileupload','validate']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+	    <div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-trophy"></i> ${text('提出问题负责人确认完成')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool"
+					data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+	<%
+		 var question= @com.jeesite.modules.suggestion.util.Get.getQuestion(taskId);
+	%>
+	    <% include('/modules/suggestion/questionInfo.html',{question:question}){}  %>	
+
+	    <#form:form id="inputForm" model="${question}" action="${ctx}/suggestion/question/save" method="post" class="form-horizontal">
+			<#form:hidden path="questionCode"/>
+			<#form:hidden name="taskId" value="${taskId}"/>
+			<div class="box-body">
+		 
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit" onclick="$('#inputForm').attr('action','${ctx}/suggestion/question/deptConfirmPass')" class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('确认完成')}</button>&nbsp;
+						<button type="submit" onclick="$('#inputForm').attr('action','${ctx}/suggestion/question/deptConfirmReject')" class="btn btn-sm btn-danger" id="btnSubmitToAudit"><i class="fa fa-check"></i> ${text('不认可完成')}</button>&nbsp;
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>	
+	$("#inputForm").validate({
+		submitHandler : function(form) {
+			js.ajaxSubmitForm($(form), function(data) {
+				js.showMessage(data.message);
+				if (data.result == Global.TRUE) {
+					js.closeCurrentTabPage(function(contentWindow) {
+						contentWindow.page();
+					});
+				}
+			}, "json");
+		}
+	});
+</script>

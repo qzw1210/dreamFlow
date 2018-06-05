@@ -1,0 +1,75 @@
+<% layout('/layouts/default.html', {title: '个人统计', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-user"></i> ${text('建议人统计')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${question}" action="${ctx}/suggestion/questionStats/suggestUserListData" method="post" class="form-inline "
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<label class="control-label">${text('分类')}：</label>
+					<div class="control-inline">
+						<#form:select path="questionType" dictType="sg_question_type" blankOption="true" class="form-control"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('开始时间结点')}：</label>
+					<div class="control-inline">
+						<#form:input path="startTimeNode" readonly="true" maxlength="20" class="form-control Wdate required"
+						dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('结束时间结点')}：</label>
+					<div class="control-inline">
+						<#form:input path="endTimeNode" readonly="true" maxlength="20" class="form-control Wdate required"
+						dataFormat="datetime" onclick="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm',isShowClear:false});"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="control-label">${text('选择部门')}：</label>
+					<div class="control-inline width-90">
+						<#form:treeselect id="testOffice" title="选择部门"
+							path="office.officeCode" labelPath="office.officeName"
+							url="${ctx}/sys/office/treeData"
+							class="" allowClear="true"/>
+					</div>
+				</div>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>			
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text('员工姓名')}', name:'user.userName', index:'a.ref_name', width:200, align:"center"},
+		{header:'${text('归属部门')}', name:'office.officeName', index:'o.office_name', width:200, align:"center"},
+		{header:'${text('建议条数')}', name:'count', index:'o.office_name', width:200, align:"center"},
+		{header:'${text('操作')}', name:'actions', width:260, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+				actions.push('<a href="${ctx}/suggestion/questionStats/suggestUserDetail?userCode='+row.userCode" class="btnList" title="${text('查看建议列表')}"><i class="fa fa-eye"></i></a>&nbsp;');
+				actions.push('</div>');
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

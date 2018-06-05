@@ -1,0 +1,52 @@
+<% layout('/layouts/default.html', {title: '问题部门', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-trophy"></i> ${text('问题部门问题列表')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+				<a href="${ctx}/suggestion/question/form" class="btn btn-default btnTool" title="${text('新增问题')}"><i class="fa fa-plus"></i> ${text('新增')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${question}" action="${ctx}/suggestion/questionStats/questOfficeQuestionsData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<#form:hidden path="office.officeCode" />
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>			
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text('问题标题')}', name:'questionTitle', index:'a.question_title', width:100, align:"left"},
+		{header:'${text('问题分类')}', name:'questionType', index:'a.question_type', width:100, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sg_question_type')}, val, '未知', true);
+		}},
+		{header:'${text('建议人')}', name:'user.userName', index:'a.question_dept_code', width:100, align:"left"},
+		{header:'${text('问题部门')}', name:'office.officeName', index:'a.question_dept_code', width:100, align:"left"},
+		{header:'${text('问题描述')}', name:'remarks', index:'a.remarks', width:200, align:"left"},
+		{header:'${text('问题负责人')}', name:'questUser.userName', index:'a.quest_user', width:100, align:"left"},
+		{header:'${text('操作')}', name:'actions', width:80, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			actions.push('<a href="${ctx}/suggestion/question/show?questionCode='+row.questionCode+'" class="btnList" title="${text('查看建议')}"><i class="fa fa-eye"></i></a>&nbsp;');
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

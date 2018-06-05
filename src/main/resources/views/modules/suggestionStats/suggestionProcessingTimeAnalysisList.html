@@ -1,0 +1,45 @@
+<% layout('/layouts/default.html', {title: '建议处理用时分析', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-user"></i> ${text('建议处理用时分析')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${question}" action="${ctx}/suggestion/questionStats/suggestionProcessingTimeAnalysisListData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>			
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text('问题标题')}', name:'questionTime.questionTitle', index:'a.question_title', width:100, align:"center"},
+		{header:'${text('问题分类')}', name:'questionTime.questionType', index:'a.question_type', width:100, align:"center", formatter: function(val, obj, row, act){
+			return js.getDictLabel(${@DictUtils.getDictListJson('sg_question_type')}, val, '未知', true);
+		}},
+		{header:'${text('问题部门')}', name:'questionTime.officeName', index:'a.question_title', width:100, align:"center"},
+		{header:'${text('问题负责人')}', name:'questionTime.questUserName', index:'a.question_title', width:100, align:"center"},
+		{header:'${text('等待指派用时')}', name:'questionTime.commitSolutionTime', index:'a.commit_solution_time', width:150, align:"center"},
+		{header:'${text('执行阶段用时')}', name:'questionTime.confirmTime', index:'a.confirm_time', width:150, align:"center"},
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

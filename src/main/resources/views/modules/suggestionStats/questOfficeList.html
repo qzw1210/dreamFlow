@@ -1,0 +1,115 @@
+<script type="text/javascript" src="http://echarts.baidu.com/dist/echarts.common.min.js"></script>
+<% layout('/layouts/default.html', {title: '按问题部门统计', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-user"></i> ${text('统计问题部门问题条数')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${question}" action="${ctx}/suggestion/questionStats/questOfficeListData" method="post" class="form-inline hide"
+				>
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>			
+			<div class="row">
+				<div class="col-xs-12">
+					<div class="form-group">
+						<div class="col-sm-10">
+							<div id="chartmain" style="width:750px; height: 500px; padding-left: 50px"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		<div class="box-footer">
+			<div class="row">
+				<div class="col-sm-offset-2 col-sm-12">
+					<button type="button" class="btn btn-big btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+				</div>
+			</div>
+		</div>
+		<table id="dataGrid" class="hidden" style="display: none"></table>
+	</div>
+	
+</div>
+<% } %>
+<script>
+var officeCodes = [];
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		console.log(data[5]);
+		var officeNames = [];
+		var counts = [];
+		for(var i =0;i<data.length;i++){
+			var officeName = data[i].office.officeName;
+			var officeCode = data[i].office.officeCode;
+			var count = data[i].count;
+			officeNames[i] = officeName;
+			officeCodes[i] = officeCode;
+			counts[i] = count;
+		}
+		myChart.setOption({
+            xAxis:{
+                data:officeNames
+            },
+            series:[
+                {
+                    //根据名字对应到相应的系列
+                    name:"建议条数",
+                    data:counts
+                }
+            ],suggestionUrl:[
+            	{
+            		data:officeCodes
+            	}
+            ]
+        })
+	}
+});
+
+//指定图标的配置和数据
+var option = {
+    title:{
+        text:'统计问题部门建议条数'
+    },
+    tooltip:{},
+    legend:{
+        data:['数据来源']
+    },
+    xAxis:{
+        data:[]
+    },
+    yAxis:{
+
+    },
+    series:[{
+        name:'建议条数',
+        type:'bar',
+        data:[]
+    }]
+    ,suggestionUrl:[
+    	{
+    		data:[]
+    	}
+    ]
+};
+//初始化echarts实例
+var myChart = echarts.init(document.getElementById('chartmain'));
+//设置点击时间
+myChart.on('click', function (params) {
+	var index = params.dataIndex;
+	window.location.href = "${ctx}/suggestion/questionStats/questOfficeQuestions?office.officeCode="+officeCodes[index];
+
+});
+//使用制定的配置项和数据显示图表
+myChart.setOption(option);
+</script>

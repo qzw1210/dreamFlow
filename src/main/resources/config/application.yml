@@ -1,0 +1,18 @@
+server:
+
+  port: 8989
+  context-path: /dreamFlow
+  tomcat:
+    uri-encoding: UTF-8
+
+spring:
+
+  profiles:
+    active: default
+    
+  main:
+    banner-mode: "off"
+  jackson:
+    date-format : yyyy-MM-dd HH:mm:ss
+    time-zone : GMT+8
+debug: true

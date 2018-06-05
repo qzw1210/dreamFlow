@@ -1,0 +1,45 @@
+<% layout('/layouts/default.html', {title: '按员统计', libs: ['dataGrid']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+		<div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-user"></i> ${text('员工统计')}
+			</div>
+			<div class="box-tools pull-right">
+				<a href="#" class="btn btn-default" id="btnSearch" title="${text('查询')}"><i class="fa fa-filter"></i> ${text('查询')}</a>
+			</div>
+		</div>
+		<div class="box-body">
+			<#form:form id="searchForm" model="${question}" action="${ctx}/suggestion/questionStats/suggestUserListData" method="post" class="form-inline hide"
+					data-page-no="${parameter.pageNo}" data-page-size="${parameter.pageSize}" data-order-by="${parameter.orderBy}">
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-sm">${text('查询')}</button>
+					<button type="reset" class="btn btn-default btn-sm">${text('重置')}</button>
+				</div>
+			</#form:form>			
+			<table id="dataGrid"></table>
+			<div id="dataGridPage"></div>
+		</div>
+	</div>
+</div>
+<% } %>
+<script>
+// 初始化DataGrid对象
+$('#dataGrid').dataGrid({
+	searchForm: $("#searchForm"),
+	columnModel: [
+		{header:'${text('建议人')}', name:'user.userName', index:'a.question_dept_code', width:100, align:"center"},
+		{header:'${text('建议部门')}', name:'office.officeName', index:'a.question_dept_code', width:100, align:"center"},
+		{header:'${text('建议条数')}', name:'count', index:'a.quest_user', width:100, align:"center"},
+		{header:'${text('操作')}', name:'actions', width:80, sortable:false, title:false, formatter: function(val, obj, row, act){
+			var actions = [];
+			actions.push('<a href="${ctx}/suggestion/questionStats/suggestUserSuggestions?user.userCode='+row.user.userCode+'" class="btnList" title="${text('查看建议列表')}"><i class="fa fa-eye"></i></a>&nbsp;');
+			return actions.join('');
+		}}
+	],
+	// 加载成功后执行事件
+	ajaxSuccess: function(data){
+		
+	}
+});
+</script>

@@ -1,0 +1,77 @@
+<% layout('/layouts/default.html', {title: '接收并指派', libs:
+['fileupload','validate']}){ %>
+<div class="main-content">
+	<div class="box box-main">
+	    <div class="box-header">
+			<div class="box-title">
+				<i class="fa icon-trophy"></i> ${text('接收并指派')}
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool"
+					data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+	<%
+		 var question= @com.jeesite.modules.suggestion.util.Get.getQuestion(taskId);
+	%>
+   	    <% include('/modules/suggestion/questionInfo.html',{question:question}){}  %>	
+   
+	    <#form:form id="inputForm" model="${question}" action="${ctx}/suggestion/question/save" method="post" class="form-horizontal">
+			<#form:hidden path="questionCode"/>
+			<#form:hidden name="taskId" value="${taskId}"/>
+			<div class="box-body">
+				<div class="form-unit">${text('接收并指派')}</div>
+				<div class="row">
+					<div class="col-xs-6">
+						<div class="form-group">
+							<label class="control-label col-sm-4" title=""> <span
+								class="required hide">*</span> 问题负责人：<i
+								class="fa icon-question hide"></i></label>
+							<div class="col-sm-8">
+								<#form:treeselect id="testUser" title="选择"
+									id="questUser"
+									path="questUser.userCode" labelPath="questUser.userName"
+									url="${ctx}//suggestion/question/treeData?postCode=user&isAll=true&officeCode=${question.office.officeCode}&isLoadUser=true" class=""
+									allowClear="true" />
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="box-footer">
+				<div class="row">
+					<div class="col-sm-offset-2 col-sm-10">
+						<button type="submit"  class="btn btn-sm btn-primary" id="btnSubmit"><i class="fa fa-check"></i> ${text('提交')}</button>&nbsp;
+						<button type="submit" onclick="$('#inputForm').attr('action','${ctx}/suggestion/question/receiveReject')" class="btn btn-sm btn-danger" id="btnSubmitToAudit"><i class="fa fa-check"></i> ${text('不是本部门问题')}</button>&nbsp;
+						<button type="button" class="btn btn-sm btn-default" id="btnCancel" onclick="js.closeCurrentTabPage()"><i class="fa fa-reply-all"></i> ${text('关 闭')}</button>
+					</div>
+				</div>
+			</div>
+		</#form:form>
+	</div>
+</div>
+<% } %>
+<script>	
+	$("#btnSubmit").click(function(){
+		var questUser = $("#questUserCode").val();
+		if(questUser == null || questUser ==""){
+			js.showErrorMessage("请选择问题负责人");
+			return false;
+		}
+		$('#inputForm').attr('action','${ctx}/suggestion/question/receivePass');
+	})
+	$("#inputForm").validate({
+		submitHandler : function(form) {
+			js.ajaxSubmitForm($(form), function(data) {
+				js.showMessage(data.message);
+				if (data.result == Global.TRUE) {
+					js.closeCurrentTabPage(function(contentWindow) {
+						contentWindow.page();
+					});
+				}
+			}, "json");
+		}
+	});
+</script>
